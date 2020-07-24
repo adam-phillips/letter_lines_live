@@ -3,6 +3,7 @@
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
+    * **Note:** the dependency on [letter_lines_elixir](https://github.com/adam-phillips/letter_lines_elixir) is currently set using a local path as it's not published.
   * Create and migrate your database with `mix ecto.setup`
   * Install Node.js dependencies with `npm install` inside the `assets` directory
   * Start Phoenix endpoint with `mix phx.server`
