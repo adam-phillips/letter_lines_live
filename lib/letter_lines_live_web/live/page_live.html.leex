@@ -1,0 +1,11 @@
+<!-- assigns is available from view (assign); @ is a macro - replace @ with assigns.[value] -->
+<svg width="<%= board_width(assigns) %>" height="<%= board_height(assigns) %>">
+  <rect width="<%= board_width(assigns) %>" height="<%= board_height(assigns) %>" class="board-background" />
+  <%=
+    for x_index <- 1..@game.board_state.width, y_index <- 1..@game.board_state.height do
+      display_tile(assigns, x_index, y_index)
+    end
+  %>
+</svg>
+<%= inspect @game %>
+<!-- TODO: Determine math for displaying blank tile or letter tile and letter  -->
