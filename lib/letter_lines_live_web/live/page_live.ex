@@ -32,7 +32,8 @@ defmodule LetterLinesLiveWeb.PageLive do
           <rect width="<% @tile_size %>" height="<%= @tile_size %>" class="hidden-letter-tile" />
         """
 
-      letter ->
+      # Commented temporarily because the unused var error is annoying
+      _letter ->
         ~E"""
           <rect width="<% @tile_size %>" height="<%= @tile_size %>" class="exposed-letter-tile" />
         """
