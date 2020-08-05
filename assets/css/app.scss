@@ -6,6 +6,14 @@ rect.board-background {
   fill: grey;
 }
 
+rect.hidden-letter-tile {
+  fill: black;
+}
+
+rect.exposed-letter-tile {
+  fill: white;
+}
+
 /* LiveView specific classes for your customizations */
 .phx-no-feedback.invalid-feedback,
 .phx-no-feedback .invalid-feedback {
