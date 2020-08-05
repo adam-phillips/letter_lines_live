@@ -5,12 +5,23 @@ defmodule LetterLinesLive.MixProject do
     [
       app: :letter_lines_live,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.10.2",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        ignore_warnings: ".dialyzer_ignore.exs",
+        list_unused_filters: true
+      ],
+      preferred_cli_env: [
+        credo: :test,
+        coveralls: :test,
+        "coveralls.html": :test,
+        coverage_report: :test
+      ],
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -33,21 +44,34 @@ defmodule LetterLinesLive.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      # Static analysis and linting
+      {:credo, "~> 1.4.0", only: :test, runtime: false},
+      # Static analysis
+      {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
+      # Data source much?
+      {:ecto_sql, "~> 3.4"},
+      # Test coverage
+      {:excoveralls, "~> 0.12.3", only: :test},
+      {:floki, ">= 0.0.0", only: :test},
+      {:gettext, "~> 0.11"},
+      # Run checks before commit and push
+      {:git_hooks, "~> 0.4.1", only: :dev, runtime: false},
+      {:jason, "~> 1.0"},
+      {:letter_lines_elixir, path: "../letter_lines_elixir"},
+      # Continuous test running
+      {:mix_test_watch, "~> 1.0.2", only: :dev, runtime: false},
+      # Mocking services for tests
+      {:mox, "~> 0.5", only: :test},
       {:phoenix, "~> 1.5.4"},
       {:phoenix_ecto, "~> 4.1"},
-      {:ecto_sql, "~> 3.4"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_live_view, "~> 0.13.0"},
-      {:floki, ">= 0.0.0", only: :test},
-      {:letter_lines_elixir, path: "../letter_lines_elixir"},
       {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_dashboard, "~> 0.2"},
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, "~> 0.13.0"},
+      {:plug_cowboy, "~> 2.0"},
+      {:postgrex, ">= 0.0.0"},
       {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:telemetry_poller, "~> 0.4"}
     ]
   end
 
@@ -59,10 +83,32 @@ defmodule LetterLinesLive.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
-      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      compile: "compile --warnings-as-errors",
+      coverage_report: [&coverage_report/1],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "git.check": ["git_hooks.run all"],
+      "hex.version_check": "run --no-start hex_version_check.exs",
+      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
+  end
+
+  defp coverage_report(_) do
+    Mix.Task.run("coveralls.html")
+
+    open_cmd =
+      case :os.type() do
+        {:win32, _} ->
+          "start"
+
+        {:unix, :darwin} ->
+          "open"
+
+        {:unix, _} ->
+          "xdg-open"
+      end
+
+    System.cmd(open_cmd, ["cover/excoveralls.html"])
   end
 end
