@@ -49,14 +49,16 @@ defmodule LetterLinesLiveWeb.PageLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_event("tile_clicked", values, socket) do
+  def handle_event("tile_clicked", _values, socket) do
     game = socket.assigns.game
-    IO.inspect(values)
+    # IO.inspect(values)
     socket = assign(socket, :game, game)
 
+    # credo:disable-for-next-line
     # TODO: get word that was clicked and set revealed true; function should be added to BoardState
     {:noreply, socket}
   end
 
+  # credo:disable-for-next-line
   # TODO add handle_event for button click - this will reveal word that contains the clicked letter
 end

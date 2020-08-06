@@ -45,7 +45,7 @@ defmodule LetterLinesLive.MixProject do
   defp deps do
     [
       # Static analysis and linting
-      {:credo, "~> 1.4.0", only: :test, runtime: false},
+      {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       # Static analysis
       {:dialyxir, "~> 1.0.0-rc.7", only: :dev, runtime: false},
       # Data source much?
