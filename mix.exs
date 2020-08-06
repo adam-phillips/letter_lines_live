@@ -57,8 +57,9 @@ defmodule LetterLinesLive.MixProject do
       # Run checks before commit and push
       {:git_hooks, "~> 0.4.1", only: :dev, runtime: false},
       {:jason, "~> 1.0"},
-      # Mix app that houses base game logic and functionality
-      {:letter_lines_elixir, git: "git@github.com:adam-phillips/letter_lines_elixir.git", tag: "v0.1.21"},
+      # Mix app that houses base game logic and functionality. Unpublished, so using ref from GitHub
+      {:letter_lines_elixir,
+       github: "adam-phillips/letter_lines_elixir", ref: "20b542b9af174c84d87e68de9ed1debf10a7f71f"},
       # Continuous test running
       {:mix_test_watch, "~> 1.0.2", only: :dev, runtime: false},
       # Mocking services for tests
