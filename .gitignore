@@ -32,3 +32,9 @@ npm-debug.log
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
 /priv/static/
+
+# Plugin we don't need to commit
+.elixir_ls
+
+# Ignore directory used for the test coverage report
+/cover
