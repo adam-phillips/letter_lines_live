@@ -15,6 +15,10 @@ matrix:
         - mix local.rebar --force
         - mix local.hex --force
         - mix deps.get
+      before_script:
+        - wget https://github.com/adam-phillips/letter_lines_elixir/archive/v0.1.21.tar.gz -O /tmp/letter_lines.tar.gz
+        - tar -xvf /tmp/letter_lines.tar.gz
+        - export PATH=$PATH:$PWD/letter_lines_elixir-v0.1.21/bin/
       script:
         - mix test
         - mix format --check-formatted
