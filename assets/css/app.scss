@@ -6,12 +6,20 @@ rect.board-background {
   fill: grey;
 }
 
+rect.available-letters-background {
+  fill: grey;
+}
+
 rect.hidden-letter-tile {
   fill: black;
 }
 
 rect.exposed-letter-tile {
   fill: white;
+}
+
+text.exposed-letter {
+  fill: black;
 }
 
 /* LiveView specific classes for your customizations */

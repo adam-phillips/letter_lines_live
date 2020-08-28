@@ -8,5 +8,19 @@
   %>
 </svg>
 <br />
+<br />
+<svg width="<%= available_letters_width(assigns) %>" height="<%= available_letters_height(assigns) %>">
+  <rect width="<%= available_letters_width(assigns) %>" height="<%= available_letters_height(assigns) %>"
+    class="available-letters-background" />
+  <%=
+    for x_index <- 0..(length(@available_letters) - 1) do
+      display_available_letters(assigns, x_index)
+    end
+  %>
+</svg>
+<%= f = form_for :submit_word, "#", phx_submit: :guess %>
+<%= text_input f, :word_guess %>
+<%= submit "Guess" %>
+</form>
+
 <%= inspect @game %>
-<!-- TODO: Determine math for displaying blank tile or letter tile and letter  -->
