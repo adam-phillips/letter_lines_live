@@ -87,7 +87,7 @@ defmodule LetterLinesLiveWeb.PageLive do
   @impl Phoenix.LiveView
   def handle_event("guess", %{"submit_word" => %{"word_guess" => guess}}, %{assigns: %{game: game}} = socket) do
     game =
-      case BoardState.reveal_word(game.board_state, guess) |> IO.inspect() do
+      case BoardState.reveal_word(game.board_state, guess) do
         {:ok, %BoardState{} = board_state} -> %GameState{game | board_state: board_state}
         {:error, :nothing_revealed} -> game
       end
