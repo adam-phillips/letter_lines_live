@@ -59,7 +59,7 @@ defmodule LetterLinesLive.MixProject do
       {:jason, "~> 1.0"},
       # Mix app that houses base game logic and functionality. Unpublished, so using ref from GitHub
       {:letter_lines_elixir,
-       github: "adam-phillips/letter_lines_elixir", ref: "20b542b9af174c84d87e68de9ed1debf10a7f71f"},
+       github: "adam-phillips/letter_lines_elixir", ref: "03ac93049b7a31d72650ef0dafdacc82737a7221"},
       # Continuous test running
       {:mix_test_watch, "~> 1.0.2", only: :dev, runtime: false},
       # Mocking services for tests

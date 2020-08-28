@@ -1,13 +1,27 @@
 defmodule LetterLinesLiveWeb.PageLive do
   use LetterLinesLiveWeb, :live_view
 
+  alias LetterLinesElixir.BoardState
+  alias LetterLinesElixir.BoardWord
+  alias LetterLinesElixir.GameState
+
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    game = LetterLinesElixir.generate_game()
+    %GameState{board_state: board_state} = game = LetterLinesElixir.generate_game()
+
+    available_letters =
+      board_state
+      |> BoardState.longest_word()
+      |> BoardWord.get_word()
+      |> String.to_charlist()
+      |> Enum.map(fn letter -> List.to_string([letter]) end)
+      |> Enum.shuffle()
 
     socket =
       socket
       |> assign(:game, game)
+      |> assign(:available_letters, available_letters)
+      |> assign(:selected_letters, [])
       |> assign(:tile_size, 50)
       |> assign(:border_size, 5)
 
@@ -22,8 +36,16 @@ defmodule LetterLinesLiveWeb.PageLive do
     (tile_size + border_size) * game.board_state.height + border_size
   end
 
+  def available_letters_width(%{available_letters: available_letters, tile_size: tile_size, border_size: border_size}) do
+    (tile_size + border_size) * length(available_letters) + border_size
+  end
+
+  def available_letters_height(%{tile_size: tile_size, border_size: border_size}) do
+    border_size * 2 + tile_size
+  end
+
   def display_tile(%{game: game} = assigns, x_index, y_index) do
-    case LetterLinesElixir.BoardState.get_display_letter_at(game.board_state, x_index, y_index) do
+    case BoardState.get_display_letter_at(game.board_state, x_index, y_index) do
       :none ->
         ""
 
@@ -36,12 +58,26 @@ defmodule LetterLinesLiveWeb.PageLive do
           phx-click="tile_clicked" phx-value-x-index="<%= x_index %>" phx-value-y-index="<%= y_index %>" />
         """
 
-      # Commented temporarily because the unused var error is annoying
-      _letter ->
+      letter ->
         ~E"""
-          <rect width="<%= @tile_size %>" height="<%= @tile_size %>" x="<%= tile_origin(assigns, x_index) %>" y="<%= tile_origin(assigns, y_index) %>" class="exposed-letter-tile" />
+          <svg width="<%= @tile_size %>" height="<%= @tile_size %>" x="<%= tile_origin(assigns, x_index) %>" y="<%= tile_origin(assigns, y_index) %>">
+            <rect width="<%= @tile_size %>" height="<%= @tile_size %>"  class="exposed-letter-tile" />
+            <text class="exposed-letter" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"><%= letter %></text>
+          </svg>
         """
     end
+  end
+
+  @doc """
+  Display the all letters that are available for use in guessing words.
+  """
+  def display_available_letters(%{available_letters: available_letters} = assigns, x_index) do
+    ~E"""
+      <svg width="<%= @tile_size %>" height="<%= @tile_size %>" x="<%= tile_origin(assigns, x_index) %>" y="<%= @border_size %>">
+        <rect width="<%= @tile_size %>" height="<%= @tile_size %>"  class="exposed-letter-tile" />
+        <text class="exposed-letter" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"><%= Enum.at(available_letters, x_index) %></text>
+      </svg>
+    """
   end
 
   def tile_origin(%{tile_size: tile_size, border_size: border_size}, index) do
@@ -49,16 +85,18 @@ defmodule LetterLinesLiveWeb.PageLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_event("tile_clicked", _values, socket) do
-    game = socket.assigns.game
-    # IO.inspect(values)
-    socket = assign(socket, :game, game)
+  def handle_event("guess", %{"submit_word" => %{"word_guess" => guess}}, %{assigns: %{game: game}} = socket) do
+    game =
+      case BoardState.reveal_word(game.board_state, guess) |> IO.inspect() do
+        {:ok, %BoardState{} = board_state} -> %GameState{game | board_state: board_state}
+        {:error, :nothing_revealed} -> game
+      end
 
-    # credo:disable-for-next-line
-    # TODO: get word that was clicked and set revealed true; function should be added to BoardState
-    {:noreply, socket}
+    {:noreply, assign(socket, :game, game)}
   end
 
-  # credo:disable-for-next-line
-  # TODO add handle_event for button click - this will reveal word that contains the clicked letter
+  @impl Phoenix.LiveView
+  def handle_event("tile_clicked", _values, socket) do
+    {:noreply, socket}
+  end
 end
