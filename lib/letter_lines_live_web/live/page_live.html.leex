@@ -18,9 +18,19 @@
     end
   %>
 </svg>
-<%= f = form_for :submit_word, "#", phx_submit: :guess %>
-<%= text_input f, :word_guess %>
-<%= submit "Guess" %>
-</form>
-
+<br />
+<br />
+<%= if @selected_letters != [] do %>
+<button>
+  <%=
+    for x <- Enum.reverse(@selected_letters) do
+      Enum.at(@available_letters, x)
+    end
+  %>
+</button>
+<% end %>
+<br />
+<br />
+<%= inspect @selected_letters %>
+<br />
 <%= inspect @game %>
