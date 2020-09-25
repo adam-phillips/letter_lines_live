@@ -73,7 +73,7 @@ defmodule LetterLinesLiveWeb.PageLive do
   """
   def display_available_letters(%{available_letters: available_letters} = assigns, x_index) do
     ~E"""
-      <svg width="<%= @tile_size %>" height="<%= @tile_size %>" x="<%= tile_origin(assigns, x_index) %>" y="<%= @border_size %>">
+      <svg width="<%= @tile_size %>" height="<%= @tile_size %>" x="<%= tile_origin(assigns, x_index) %>" y="<%= @border_size %>" phx-click="select_letter" phx-value-index="<%= x_index %>">
         <rect width="<%= @tile_size %>" height="<%= @tile_size %>"  class="exposed-letter-tile" />
         <text class="exposed-letter" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"><%= Enum.at(available_letters, x_index) %></text>
       </svg>
@@ -98,5 +98,19 @@ defmodule LetterLinesLiveWeb.PageLive do
   @impl Phoenix.LiveView
   def handle_event("tile_clicked", _values, socket) do
     {:noreply, socket}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("select_letter", %{"index" => index}, %{assigns: %{selected_letters: selected_letters}} = socket) do
+    index = String.to_integer(index)
+
+    selected_letters =
+      if index in selected_letters do
+        Enum.reject(selected_letters, &(&1 == index))
+      else
+        [index | selected_letters]
+      end
+
+    {:noreply, assign(socket, :selected_letters, selected_letters)}
   end
 end
