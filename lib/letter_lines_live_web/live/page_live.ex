@@ -80,14 +80,21 @@ defmodule LetterLinesLiveWeb.PageLive do
     """
   end
 
+  def current_guess(%{available_letters: available_letters, selected_letters: selected_letters}) do
+    for x <- Enum.reverse(selected_letters) do
+      Enum.at(available_letters, x)
+    end
+    |> Enum.join()
+  end
+
   def tile_origin(%{tile_size: tile_size, border_size: border_size}, index) do
     (tile_size + border_size) * index + border_size
   end
 
   @impl Phoenix.LiveView
-  def handle_event("guess", %{"submit_word" => %{"word_guess" => guess}}, %{assigns: %{game: game}} = socket) do
+  def handle_event("guess", _, %{assigns: %{game: game} = assigns} = socket) do
     game =
-      case BoardState.reveal_word(game.board_state, guess) do
+      case BoardState.reveal_word(game.board_state, current_guess(assigns)) do
         {:ok, %BoardState{} = board_state} -> %GameState{game | board_state: board_state}
         {:error, :nothing_revealed} -> game
       end
