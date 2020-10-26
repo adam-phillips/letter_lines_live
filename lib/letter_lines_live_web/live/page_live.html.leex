@@ -21,11 +21,9 @@
 <br />
 <br />
 <%= if @selected_letters != [] do %>
-<button>
+<button phx-click="guess">
   <%=
-    for x <- Enum.reverse(@selected_letters) do
-      Enum.at(@available_letters, x)
-    end
+    current_guess(assigns)
   %>
 </button>
 <% end %>
